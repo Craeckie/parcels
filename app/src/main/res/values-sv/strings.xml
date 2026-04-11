@@ -71,5 +71,5 @@
   <string name="tracking_id">Spårningsnummer</string>
   <string name="tracking_id_error_text">Spårningsnummer får inte lämnas tom.</string>
   <string name="unmetered_only_setting">Uppdatera endast på obegränsade nätverk</string>
-  <string name="unmetered_only_setting_detail">Om aktiverat söker Parcel efter uppdateringar endast via obegränsade anslutningar, t.ex. ditt hem-Wi-Fi.</string>
+  <string name="unmetered_only_setting_detail">Om aktiverat söker Deliveries efter uppdateringar endast via obegränsade anslutningar, t.ex. ditt hem-Wi-Fi.</string>
 </resources>

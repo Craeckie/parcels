@@ -1,6 +1,6 @@
-📦 Parcel hilft dabei Deine Pakete zu verfolgen.
+📦 Deliveries hilft dabei Deine Pakete zu verfolgen.
 
-Einige Features von Parcel:
+Einige Features von Deliveries:
 
 - 📱 Einfache Benutzeroberfläche: Fokussiere Dich auf Deine Pakete, nicht auf die Bedienung der App.
 - 💬 Notifications: Erhalte Benachrichtigungen über jeden Fortschritt eines Paketes.

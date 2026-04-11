@@ -1,4 +1,4 @@
-📦 Parcel je aplikace, která vám pomáhá sledovat všechny vaše zásilky.
+📦 Deliveries je aplikace, která vám pomáhá sledovat všechny vaše zásilky.
 
 Některé funkce aplikace:
 

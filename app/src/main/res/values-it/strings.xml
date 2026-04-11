@@ -89,5 +89,5 @@
   <string name="tracking_id">Codice di tracciamento</string>
   <string name="tracking_id_error_text">Il campo del codice di tracciamento non può essere vuoto.</string>
   <string name="unmetered_only_setting">Aggiornamento solo su reti non a consumo</string>
-  <string name="unmetered_only_setting_detail">Se abilitato, Parcel scaricherà gli aggiornamenti dei pacchi solo su connessioni non a consumo, come il Wi-Fi di casa.</string>
+  <string name="unmetered_only_setting_detail">Se abilitato, Deliveries scaricherà gli aggiornamenti dei pacchi solo su connessioni non a consumo, come il Wi-Fi di casa.</string>
 </resources>

@@ -1,6 +1,6 @@
-📦 Parcel to aplikacja, która pomaga śledzić wszystkie Twoje paczki.
+📦 Deliveries to aplikacja, która pomaga śledzić wszystkie Twoje paczki.
 
-Niektóre funkcje Parcel:
+Niektóre funkcje Deliveries:
 
 - 📱 Prosty i przejrzysty interfejs: Skup się wyłącznie na paczkach, a nie na tym, jak korzystać z aplikacji.
 - 💬 Powiadomienia: Otrzymuj powiadomienia za każdym razem, gdy paczka dotrze dalej.

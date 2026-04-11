@@ -70,5 +70,5 @@
   <string name="tracking_id">Takip Numarası</string>
   <string name="tracking_id_error_text">Takip numarası boş bırakılamaz.</string>
   <string name="unmetered_only_setting">Yalnızca sınırsız ağlarda güncelle</string>
-  <string name="unmetered_only_setting_detail">Etkinleştirildiğinde, Parcel koli güncellemelerini yalnızca ev Wi-Fi gibi sınırsız bağlantılarda kontrol eder.</string>
+  <string name="unmetered_only_setting_detail">Etkinleştirildiğinde, Deliveries koli güncellemelerini yalnızca ev Wi-Fi gibi sınırsız bağlantılarda kontrol eder.</string>
 </resources>

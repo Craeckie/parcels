@@ -88,5 +88,5 @@
   <string name="tracking_id">Identyfikator śledzenia</string>
   <string name="tracking_id_error_text">Identyfikator śledzenia nie może być pusty.</string>
   <string name="unmetered_only_setting">Aktualizuj tylko w sieciach bez limitu</string>
-  <string name="unmetered_only_setting_detail">Jeśli ta opcja jest włączona, Parcel będzie szukać aktualizacji przesyłek tylko w przypadku połączeń nielimitowanych, takich jak domowe Wi-Fi.</string>
+  <string name="unmetered_only_setting_detail">Jeśli ta opcja jest włączona, Deliveries będzie szukać aktualizacji przesyłek tylko w przypadku połączeń nielimitowanych, takich jak domowe Wi-Fi.</string>
 </resources>

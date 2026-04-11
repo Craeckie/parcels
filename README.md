@@ -1,6 +1,6 @@
-# Parcel
+# Deliveries
 
-Parcel is an app that lets you track your parcels from various providers with ease.
+Deliveries is an app that lets you track your parcels from various providers with ease.
 
 <p align="center">
 <a href="https://play.google.com/store/apps/details?id=dev.itsvic.parceltracker">

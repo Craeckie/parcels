@@ -66,5 +66,5 @@
   <string name="tracking_id">Csomagszám</string>
   <string name="tracking_id_error_text">A csomagszám nem lehet üres.</string>
   <string name="unmetered_only_setting">Csak korlátlan hálózaton való frissítés</string>
-  <string name="unmetered_only_setting_detail">A Parcel csak akkor fog frissítéseket keresni automatikusan, ha nem forgalmidíjas hálózatra van csatlakozva a készülék, pl. otthoni Wi-Fi.</string>
+  <string name="unmetered_only_setting_detail">A Deliveries csak akkor fog frissítéseket keresni automatikusan, ha nem forgalmidíjas hálózatra van csatlakozva a készülék, pl. otthoni Wi-Fi.</string>
 </resources>

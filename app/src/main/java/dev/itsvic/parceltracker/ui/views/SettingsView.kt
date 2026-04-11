@@ -185,7 +185,7 @@ fun SettingsView(
       LogcatButton(modifier = Modifier.padding(16.dp, 12.dp).fillMaxWidth())
 
       Text(
-          "Parcel ${BuildConfig.VERSION_NAME}",
+          "${stringResource(R.string.app_name)} ${BuildConfig.VERSION_NAME}",
           modifier = Modifier.padding(16.dp, 8.dp),
           style = MaterialTheme.typography.bodySmall,
           color = MaterialTheme.colorScheme.onSurfaceVariant,

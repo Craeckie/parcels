@@ -1,6 +1,6 @@
-📦 Parcel is an app that helps you keep track of all your parcels.
+📦 Deliveries is an app that helps you keep track of all your parcels.
 
-Some of Parcel's features:
+Some of Deliveries's features:
 
 - 📱 Clean and simple interface: Focus solely on your parcels, not how to use the app.
 - 💬 Notifications: Get notified every time a parcel progresses further.

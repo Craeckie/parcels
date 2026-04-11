@@ -38,7 +38,7 @@ fun AboutDialog(onDismissRequest: () -> Unit) {
     Card(modifier = Modifier.fillMaxWidth().padding(16.dp), shape = RoundedCornerShape(16.dp)) {
       Column(modifier = Modifier.padding(24.dp)) {
         Text(
-            text = "Parcel",
+            text = stringResource(R.string.app_name),
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,

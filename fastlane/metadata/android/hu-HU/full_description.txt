@@ -1,6 +1,6 @@
-📦 A Parcel egy app ami segít a csomagjaid nyomon követésében.
+📦 A Deliveries egy app ami segít a csomagjaid nyomon követésében.
 
-Parcel néhány funkciója:
+Deliveries néhány funkciója:
 
 - 📱 Letisztult és egyszerű felület: fókuszálj a csomagjaidra, ne az app használatának elsajátítására.
 - 💬 Értesítések: Értesülj a csomagjaid állapotának változásáról.

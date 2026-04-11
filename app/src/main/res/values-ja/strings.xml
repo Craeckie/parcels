@@ -72,5 +72,5 @@
   <string name="tracking_id">追跡 ID</string>
   <string name="tracking_id_error_text">追跡 ID は空白にできません。</string>
   <string name="unmetered_only_setting">定額制ネットワークでのみ更新する</string>
-  <string name="unmetered_only_setting_detail">有効化すると Parcel は自宅の Wi-Fi などの定額制接続時でのみ更新を検索します。</string>
+  <string name="unmetered_only_setting_detail">有効化すると Deliveries は自宅の Wi-Fi などの定額制接続時でのみ更新を検索します。</string>
 </resources>

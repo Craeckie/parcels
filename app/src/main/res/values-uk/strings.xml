@@ -70,5 +70,5 @@
   <string name="tracking_id">Трекінг-ID</string>
   <string name="tracking_id_error_text">Трекінг-ID не може бути пустим.</string>
   <string name="unmetered_only_setting">Оновлюватись тільки на необмежених мережах</string>
-  <string name="unmetered_only_setting_detail">Якщо ввімкнено, то Parcel буде сповіщувати про дані посилки тільки на необмежених з\'єднаннях, такі як ваш домашній Wi-Fi.</string>
+  <string name="unmetered_only_setting_detail">Якщо ввімкнено, то Deliveries буде сповіщувати про дані посилки тільки на необмежених з\'єднаннях, такі як ваш домашній Wi-Fi.</string>
 </resources>

@@ -61,5 +61,5 @@
   <string name="tracking_id">รหัสพัสดุ</string>
   <string name="tracking_id_error_text">รหัสพัสดุไม่สามารถเว้นว่างได้</string>
   <string name="unmetered_only_setting">อัปเดตเมื่อเชื่อมต่อเครือข่ายที่ไม่จำกัดการใช้งานเท่านั้น</string>
-  <string name="unmetered_only_setting_detail">เมื่อเปิด Parcel จะตรวจสอบสถานะของพัสดุเมื่อเชื่อมต่อเครือข่ายที่ไม่จำกัดการใช้งานเท่านั้น เช่น Wi-Fi บ้าน</string>
+  <string name="unmetered_only_setting_detail">เมื่อเปิด Deliveries จะตรวจสอบสถานะของพัสดุเมื่อเชื่อมต่อเครือข่ายที่ไม่จำกัดการใช้งานเท่านั้น เช่น Wi-Fi บ้าน</string>
 </resources>
