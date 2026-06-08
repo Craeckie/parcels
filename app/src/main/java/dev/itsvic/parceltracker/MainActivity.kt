@@ -23,8 +23,12 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableIntState
@@ -68,6 +72,8 @@ import java.time.ZoneId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import androidx.lifecycle.lifecycleScope
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -84,12 +90,69 @@ class MainActivity : ComponentActivity() {
     parcelToOpen = mutableIntStateOf(intent.getIntExtra("openParcel", -1))
     deepLinkPage = mutableStateOf(parseDeepLink(intent))
 
+    val exportLauncher =
+        registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri
+          ->
+          uri ?: return@registerForActivityResult
+          lifecycleScope.launch(Dispatchers.IO) {
+            try {
+              BackupManager.exportToUri(applicationContext, uri)
+              withContext(Dispatchers.Main) {
+                Toast.makeText(
+                        applicationContext,
+                        getString(R.string.backup_export_success),
+                        Toast.LENGTH_SHORT)
+                    .show()
+              }
+            } catch (e: Exception) {
+              Log.e("MainActivity", "Export failed", e)
+              withContext(Dispatchers.Main) {
+                Toast.makeText(
+                        applicationContext,
+                        getString(R.string.backup_export_failed),
+                        Toast.LENGTH_SHORT)
+                    .show()
+              }
+            }
+          }
+        }
+
+    val importLauncher =
+        registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+          uri ?: return@registerForActivityResult
+          lifecycleScope.launch(Dispatchers.IO) {
+            try {
+              BackupManager.importFromUri(applicationContext, uri)
+              withContext(Dispatchers.Main) {
+                Toast.makeText(
+                        applicationContext,
+                        getString(R.string.backup_import_success),
+                        Toast.LENGTH_SHORT)
+                    .show()
+              }
+            } catch (e: Exception) {
+              Log.e("MainActivity", "Import failed", e)
+              withContext(Dispatchers.Main) {
+                Toast.makeText(
+                        applicationContext,
+                        getString(R.string.backup_import_failed),
+                        Toast.LENGTH_SHORT)
+                    .show()
+              }
+            }
+          }
+        }
+
     setContent {
       val parcelToOpen by parcelToOpen
 
       ParcelTrackerTheme {
         Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
-          ParcelAppNavigation(parcelToOpen)
+          ParcelAppNavigation(
+              parcelToOpen,
+              onExportBackup = { exportLauncher.launch("deliveries-backup.json") },
+              onImportBackup = { importLauncher.launch(arrayOf("application/json", "*/*")) },
+          )
         }
       }
     }
@@ -155,7 +218,11 @@ class MainActivity : ComponentActivity() {
 @Serializable data class EditParcelPage(val parcelDbId: Int)
 
 @Composable
-fun ParcelAppNavigation(parcelToOpen: Int) {
+fun ParcelAppNavigation(
+    parcelToOpen: Int,
+    onExportBackup: () -> Unit,
+    onImportBackup: () -> Unit,
+) {
   val db = ParcelApplication.db
   val navController = rememberNavController()
   val scope = rememberCoroutineScope()
@@ -224,7 +291,13 @@ fun ParcelAppNavigation(parcelToOpen: Int) {
       )
     }
 
-    composable<SettingsPage> { SettingsView(onBackPressed = { navController.popBackStack() }) }
+    composable<SettingsPage> {
+      SettingsView(
+          onBackPressed = { navController.popBackStack() },
+          onExportBackup = onExportBackup,
+          onImportBackup = onImportBackup,
+      )
+    }
 
     composable<ParcelPage> { backStackEntry ->
       val route: ParcelPage = backStackEntry.toRoute()
@@ -385,6 +458,55 @@ fun ParcelAppNavigation(parcelToOpen: Int) {
     composable<AddParcelPage> { backStackEntry ->
       val route: AddParcelPage = backStackEntry.toRoute()
       val initialService = Service.entries.getOrNull(route.serviceOrdinal) ?: Service.UNDEFINED
+
+      var pendingParcel by remember { mutableStateOf<dev.itsvic.parceltracker.db.Parcel?>(null) }
+      var duplicateParcel by remember { mutableStateOf<dev.itsvic.parceltracker.db.Parcel?>(null) }
+
+      duplicateParcel?.let { existing ->
+        pendingParcel?.let { pending ->
+          AlertDialog(
+              onDismissRequest = {
+                duplicateParcel = null
+                pendingParcel = null
+              },
+              title = { Text(stringResource(R.string.duplicate_parcel_title)) },
+              text = {
+                Text(stringResource(R.string.duplicate_parcel_message, existing.humanName))
+              },
+              confirmButton = {
+                TextButton(
+                    onClick = {
+                      duplicateParcel = null
+                      pendingParcel = null
+                      navController.navigate(route = ParcelPage(existing.id)) {
+                        popUpTo(HomePage)
+                      }
+                    }) {
+                      Text(stringResource(R.string.duplicate_view_existing))
+                    }
+              },
+              dismissButton = {
+                TextButton(
+                    onClick = {
+                      val p = pending
+                      duplicateParcel = null
+                      pendingParcel = null
+                      scope.launch(Dispatchers.IO) {
+                        val id = db.parcelDao().insert(p)
+                        scope.launch {
+                          navController.navigate(route = ParcelPage(id.toInt())) {
+                            popUpTo(HomePage)
+                          }
+                        }
+                      }
+                    }) {
+                      Text(stringResource(R.string.duplicate_add_anyway))
+                    }
+              },
+          )
+        }
+      }
+
       AddEditParcelView(
           null,
           initialTrackingId = route.trackingId,
@@ -401,9 +523,17 @@ fun ParcelAppNavigation(parcelToOpen: Int) {
             }
 
             scope.launch(Dispatchers.IO) {
-              val id = db.parcelDao().insert(it)
-              scope.launch {
-                navController.navigate(route = ParcelPage(id.toInt())) { popUpTo(HomePage) }
+              val existing = db.parcelDao().findByTrackingIdAndService(it.parcelId, it.service)
+              if (existing != null) {
+                scope.launch {
+                  pendingParcel = it
+                  duplicateParcel = existing
+                }
+              } else {
+                val id = db.parcelDao().insert(it)
+                scope.launch {
+                  navController.navigate(route = ParcelPage(id.toInt())) { popUpTo(HomePage) }
+                }
               }
             }
           },

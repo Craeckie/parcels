@@ -52,4 +52,7 @@ interface ParcelDao {
   @Update suspend fun update(parcel: Parcel)
 
   @Delete suspend fun delete(parcel: Parcel)
+
+  @Query("SELECT * FROM parcel WHERE parcelId = :trackingId AND service = :service LIMIT 1")
+  suspend fun findByTrackingIdAndService(trackingId: String, service: Service): Parcel?
 }

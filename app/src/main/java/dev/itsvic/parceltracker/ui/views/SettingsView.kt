@@ -63,6 +63,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun SettingsView(
     onBackPressed: () -> Unit,
+    onExportBackup: () -> Unit = {},
+    onImportBackup: () -> Unit = {},
 ) {
   val context = LocalContext.current
   val demoMode by context.dataStore.data.map { it[DEMO_MODE] == true }.collectAsState(false)
@@ -144,6 +146,27 @@ fun SettingsView(
                               color = MaterialTheme.colorScheme.primary))),
           style = MaterialTheme.typography.bodyMedium,
           modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+
+      Text(
+          stringResource(R.string.settings_backup),
+          modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 2.dp),
+          style = MaterialTheme.typography.bodyMedium,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
+
+      FilledTonalButton(
+          onClick = onExportBackup,
+          modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp).fillMaxWidth(),
+      ) {
+        Text(stringResource(R.string.backup_export))
+      }
+
+      FilledTonalButton(
+          onClick = onImportBackup,
+          modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp).fillMaxWidth(),
+      ) {
+        Text(stringResource(R.string.backup_import))
+      }
 
       Text(
           stringResource(R.string.settings_experimental),
