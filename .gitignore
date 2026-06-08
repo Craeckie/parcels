@@ -22,3 +22,6 @@ fastlane/report.xml
 
 keystore.properties
 /.idea
+
+# Local-only research notes (never committed)
+*.local.md

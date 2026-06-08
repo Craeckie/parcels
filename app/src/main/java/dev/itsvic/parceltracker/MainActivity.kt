@@ -4,6 +4,7 @@ package dev.itsvic.parceltracker
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -27,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableIntState
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -45,6 +47,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.squareup.moshi.JsonDataException
 import dev.itsvic.parceltracker.api.APIKeyMissingException
+import dev.itsvic.parceltracker.api.Service
 import dev.itsvic.parceltracker.api.Parcel as APIParcel
 import dev.itsvic.parceltracker.api.ParcelHistoryItem
 import dev.itsvic.parceltracker.api.ParcelNonExistentException
@@ -65,6 +68,9 @@ import java.time.ZoneId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import kotlinx.serialization.Serializable
 import okio.IOException
 
@@ -76,6 +82,7 @@ class MainActivity : ComponentActivity() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) handleNotificationPermissionStuff()
 
     parcelToOpen = mutableIntStateOf(intent.getIntExtra("openParcel", -1))
+    deepLinkPage = mutableStateOf(parseDeepLink(intent))
 
     setContent {
       val parcelToOpen by parcelToOpen
@@ -90,11 +97,23 @@ class MainActivity : ComponentActivity() {
 
   companion object {
     lateinit var parcelToOpen: MutableIntState
+    lateinit var deepLinkPage: MutableState<AddParcelPage?>
   }
 
   override fun onNewIntent(intent: Intent) {
     super.onNewIntent(intent)
     parcelToOpen.intValue = intent.getIntExtra("openParcel", -1)
+    deepLinkPage.value = parseDeepLink(intent)
+  }
+
+  private fun parseDeepLink(intent: Intent): AddParcelPage? {
+    if (intent.action != Intent.ACTION_VIEW) return null
+    val uri: Uri = intent.data ?: return null
+    if (uri.host == "www.dhl.de" && uri.path?.contains("dhl-sendungsverfolgung") == true) {
+      val piececode = uri.getQueryParameter("piececode") ?: return null
+      return AddParcelPage(trackingId = piececode, serviceOrdinal = Service.DHL_DE.ordinal)
+    }
+    return null
   }
 
   @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -131,7 +150,7 @@ class MainActivity : ComponentActivity() {
 
 @Serializable data class ParcelPage(val parcelDbId: Int)
 
-@Serializable object AddParcelPage
+@Serializable data class AddParcelPage(val trackingId: String = "", val serviceOrdinal: Int = -1)
 
 @Serializable data class EditParcelPage(val parcelDbId: Int)
 
@@ -146,6 +165,15 @@ fun ParcelAppNavigation(parcelToOpen: Int) {
   LaunchedEffect(parcelToOpen) {
     if (parcelToOpen != -1) {
       navController.navigate(route = ParcelPage(parcelToOpen)) { popUpTo(HomePage) }
+    }
+  }
+
+  val deepLinkPage by MainActivity.deepLinkPage
+
+  LaunchedEffect(deepLinkPage) {
+    deepLinkPage?.let { page ->
+      navController.navigate(page) { popUpTo(HomePage) }
+      MainActivity.deepLinkPage.value = null
     }
   }
 
@@ -174,11 +202,25 @@ fun ParcelAppNavigation(parcelToOpen: Int) {
           if (demoMode) derivedStateOf { demoModeParcels }
           else db.parcelDao().getAllWithStatus().collectAsState(initial = emptyList())
 
+      var isRefreshing by remember { mutableStateOf(false) }
+      val workManager = WorkManager.getInstance(context)
+
       HomeView(
           parcels = parcels.value,
-          onNavigateToAddParcel = { navController.navigate(route = AddParcelPage) },
+          onNavigateToAddParcel = { navController.navigate(route = AddParcelPage()) },
           onNavigateToParcel = { navController.navigate(route = ParcelPage(it.id)) },
           onNavigateToSettings = { navController.navigate(route = SettingsPage) },
+          isRefreshing = isRefreshing,
+          onRefresh = {
+            isRefreshing = true
+            val request = OneTimeWorkRequestBuilder<NotificationWorker>().build()
+            workManager.enqueue(request)
+            scope.launch {
+              workManager.getWorkInfoByIdFlow(request.id).collect { info ->
+                if (info?.state?.isFinished == true) isRefreshing = false
+              }
+            }
+          },
       )
     }
 
@@ -340,9 +382,13 @@ fun ParcelAppNavigation(parcelToOpen: Int) {
           )
     }
 
-    composable<AddParcelPage> {
+    composable<AddParcelPage> { backStackEntry ->
+      val route: AddParcelPage = backStackEntry.toRoute()
+      val initialService = Service.entries.getOrNull(route.serviceOrdinal) ?: Service.UNDEFINED
       AddEditParcelView(
           null,
+          initialTrackingId = route.trackingId,
+          initialService = initialService,
           onBackPressed = { navController.popBackStack() },
           onCompleted = {
             if (demoMode) {

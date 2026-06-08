@@ -51,12 +51,18 @@ android {
         signingConfig = signingConfigs.getByName("release")
       }
 
+      // Distinct application ID so this fork installs side-by-side with the official app.
+      applicationIdSuffix = ".fork"
+
       isMinifyEnabled = true
       isShrinkResources = true
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
     }
 
-    debug { isPseudoLocalesEnabled = true }
+    debug {
+      applicationIdSuffix = ".fork"
+      isPseudoLocalesEnabled = true
+    }
   }
 
   androidResources { generateLocaleConfig = true }

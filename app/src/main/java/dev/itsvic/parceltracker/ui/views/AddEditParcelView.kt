@@ -53,17 +53,19 @@ fun AddEditParcelView(
     parcel: Parcel?,
     onBackPressed: () -> Unit,
     onCompleted: (Parcel) -> Unit,
+    initialTrackingId: String = parcel?.parcelId ?: "",
+    initialService: Service = parcel?.service ?: Service.UNDEFINED,
 ) {
   val isEdit = parcel != null
 
   var humanName by remember { mutableStateOf(parcel?.humanName ?: "") }
   var nameError by remember { mutableStateOf(false) }
-  var trackingId by remember { mutableStateOf(parcel?.parcelId ?: "") }
+  var trackingId by remember { mutableStateOf(initialTrackingId) }
   var idError by remember { mutableStateOf(false) }
   var specifyPostalCode by remember { mutableStateOf(parcel?.postalCode != null) }
   var postalCode by remember { mutableStateOf(parcel?.postalCode ?: "") }
   var postalCodeError by remember { mutableStateOf(false) }
-  var service by remember { mutableStateOf(parcel?.service ?: Service.UNDEFINED) }
+  var service by remember { mutableStateOf(initialService) }
   var serviceError by remember { mutableStateOf(false) }
 
   val backend = if (service != Service.UNDEFINED) getDeliveryService(service) else null

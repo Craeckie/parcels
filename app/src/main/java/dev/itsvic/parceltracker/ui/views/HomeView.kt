@@ -19,6 +19,7 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,6 +49,8 @@ fun HomeView(
     onNavigateToAddParcel: () -> Unit,
     onNavigateToParcel: (Parcel) -> Unit,
     onNavigateToSettings: () -> Unit,
+    isRefreshing: Boolean = false,
+    onRefresh: () -> Unit = {},
 ) {
   val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
   var expanded by remember { mutableStateOf(false) }
@@ -96,16 +99,22 @@ fun HomeView(
         }
       },
       modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)) { innerPadding ->
-        LazyColumn(modifier = Modifier.padding(innerPadding)) {
-          if (parcels.isEmpty())
-              item {
-                Text(
-                    stringResource(R.string.no_parcels_flavor),
-                    modifier = Modifier.padding(horizontal = 16.dp))
-              }
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
+            modifier = Modifier.padding(innerPadding),
+        ) {
+          LazyColumn {
+            if (parcels.isEmpty())
+                item {
+                  Text(
+                      stringResource(R.string.no_parcels_flavor),
+                      modifier = Modifier.padding(horizontal = 16.dp))
+                }
 
-          items(parcels.reversed()) { parcel ->
-            ParcelRow(parcel.parcel, parcel.status?.status) { onNavigateToParcel(parcel.parcel) }
+            items(parcels.reversed()) { parcel ->
+              ParcelRow(parcel.parcel, parcel.status?.status) { onNavigateToParcel(parcel.parcel) }
+            }
           }
         }
 

@@ -1,5 +1,6 @@
 import dev.itsvic.parceltracker.api.AllegroOneBoxDeliveryService
 import dev.itsvic.parceltracker.api.AnPostDeliveryService
+import dev.itsvic.parceltracker.api.DhlDeDeliveryService
 import dev.itsvic.parceltracker.api.FPXDeliveryService
 import dev.itsvic.parceltracker.api.InPostDeliveryService
 import dev.itsvic.parceltracker.api.MagyarPostaDeliveryService
@@ -10,6 +11,17 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class FormatValidationTest {
+  @Test
+  fun dhlDe_TwentyDigit_ReturnsTrue() {
+    assertTrue(DhlDeDeliveryService.acceptsFormat("00340433881784998681"))
+  }
+
+  @Test
+  fun dhlDe_WrongLength_ReturnsFalse() {
+    assertFalse(DhlDeDeliveryService.acceptsFormat("0034043388178499868")) // 19 digits
+    assertFalse(DhlDeDeliveryService.acceptsFormat("not-a-number"))
+  }
+
   @Test
   fun polishPost_PocztexFormatReturnsTrue() {
     assertTrue(PolishPostDeliveryService.acceptsFormat("PX1234567890"))

@@ -21,6 +21,7 @@ enum class Service {
   // International
   CAINIAO,
   DHL,
+  DHL_DE,
   GLS,
   UPS,
   FPX,
@@ -69,6 +70,7 @@ fun getDeliveryService(service: Service): DeliveryService? {
   return when (service) {
     Service.CAINIAO -> CainiaoDeliveryService
     Service.DHL -> DhlDeliveryService
+    Service.DHL_DE -> DhlDeDeliveryService
     Service.GLS -> GLSGlobalDeliveryService
     Service.UPS -> UPSDeliveryService
     Service.FPX -> FPXDeliveryService
