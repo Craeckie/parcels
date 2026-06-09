@@ -197,6 +197,8 @@ interface DeliveryService {
   fun acceptsFormat(trackingId: String): Boolean {
     return false
   }
+
+  fun trackingUrl(trackingId: String): String? = null
 }
 
 class ParcelNonExistentException : Exception("Parcel does not exist in delivery service API")

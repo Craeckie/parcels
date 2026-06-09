@@ -37,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -47,6 +48,7 @@ import dev.itsvic.parceltracker.api.Parcel
 import dev.itsvic.parceltracker.api.ParcelHistoryItem
 import dev.itsvic.parceltracker.api.Service
 import dev.itsvic.parceltracker.api.Status
+import dev.itsvic.parceltracker.api.getDeliveryService
 import dev.itsvic.parceltracker.api.getDeliveryServiceName
 import dev.itsvic.parceltracker.ui.components.ParcelHistoryItemRow
 import dev.itsvic.parceltracker.ui.theme.MenuItemContentPadding
@@ -69,6 +71,8 @@ fun ParcelView(
 ) {
   val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
   var expanded by remember { mutableStateOf(false) }
+  val uriHandler = LocalUriHandler.current
+  val trackingUrl = remember(service, parcel.id) { getDeliveryService(service)?.trackingUrl(parcel.id) }
 
   Scaffold(
       topBar = {
@@ -80,6 +84,12 @@ fun ParcelView(
               }
             },
             actions = {
+              if (trackingUrl != null)
+                  IconButton(onClick = { uriHandler.openUri(trackingUrl) }) {
+                    Icon(
+                        painterResource(R.drawable.open_in_new),
+                        stringResource(R.string.open_tracking_page))
+                  }
               IconButton(onClick = { expanded = !expanded }) {
                 Icon(Icons.Filled.MoreVert, stringResource(R.string.more_options))
               }

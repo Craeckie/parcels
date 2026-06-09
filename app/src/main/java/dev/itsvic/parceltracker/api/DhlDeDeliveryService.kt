@@ -29,6 +29,9 @@ object DhlDeDeliveryService : DeliveryService {
     return digits20Format.accepts(trackingId)
   }
 
+  override fun trackingUrl(trackingId: String) =
+      "https://www.dhl.de/en/privatkunden/pakete-empfangen/verfolgen.html?piececode=$trackingId"
+
   override suspend fun getParcel(trackingId: String, postalCode: String?): Parcel {
     val resp =
         try {

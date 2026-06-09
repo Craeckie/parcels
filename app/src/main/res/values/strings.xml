@@ -37,6 +37,7 @@
   <string name="ignore">Ignore</string>
   <string name="license">License</string>
   <string name="more_options">More options</string>
+  <string name="open_tracking_page">Open tracking page</string>
   <string name="network_failure_detail">Your device may be offline, the service\'s servers may be offline, or the details you have entered are incorrect.</string>
   <string name="no_parcels_flavor">You currently do not have any parcels.</string>
   <string name="parcel_doesnt_exist_detail">This parcel does not exist on the delivery service\'s servers yet. Make sure the parcel details are correct.</string>
