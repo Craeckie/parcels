@@ -31,6 +31,7 @@
   <string name="postal_code">Posta kodu</string>
   <string name="postal_code_error_text">Posta kodu boş bırakılamaz.</string>
   <string name="property_delivery_time">Teslimat zamanı</string>
+  <string name="property_dropoff">Drop-off location</string>
   <string name="property_eta">Tahmini varış zamanı</string>
   <string name="property_weight">Ağırlık</string>
   <string name="repository">Depo</string>

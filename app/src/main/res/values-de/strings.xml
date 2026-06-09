@@ -34,6 +34,7 @@
   <string name="postal_code">Postleitzahl</string>
   <string name="postal_code_error_text">Postleitzahl darf nicht leer sein.</string>
   <string name="property_delivery_time">Zugestellt am</string>
+  <string name="property_dropoff">Drop-off location</string>
   <string name="property_eta">Voraussichtliche Lieferung</string>
   <string name="property_weight">Gewicht</string>
   <string name="repository">Repository</string>

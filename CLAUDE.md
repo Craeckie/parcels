@@ -64,6 +64,10 @@ ui/components — Reusable Compose components
 
 `ExampleDeliveryService` is Demo Mode only — not a real carrier.
 
+There are **two DHL providers**:
+- `DhlDeDeliveryService` — uses the public `dhl.de` tracking endpoint, **no API key required**, 20-digit tracking numbers. This is the actively maintained one.
+- `DhlDeliveryService` — uses the official `api-eu.dhl.com` Tracking API, **requires a user-supplied DHL API key**. Not a focus for new development.
+
 ### Data model
 
 There are two `Parcel` types — don't confuse them:

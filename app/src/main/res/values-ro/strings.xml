@@ -34,6 +34,7 @@
   <string name="postal_code">Cod poștal</string>
   <string name="postal_code_error_text">Codul poștal nu trebuie să rămână necompletat.</string>
   <string name="property_delivery_time">Livrat la</string>
+  <string name="property_dropoff">Drop-off location</string>
   <string name="property_eta">Timp estimat</string>
   <string name="property_weight">Greutate</string>
   <string name="repository">Depozit</string>

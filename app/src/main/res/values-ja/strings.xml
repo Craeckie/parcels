@@ -32,6 +32,7 @@
   <string name="postal_code">郵便番号</string>
   <string name="postal_code_error_text">郵便番号は空白にできません。</string>
   <string name="property_delivery_time">配送先</string>
+  <string name="property_dropoff">Drop-off location</string>
   <string name="property_eta">ETA</string>
   <string name="property_weight">重さ</string>
   <string name="repository">リポジトリ</string>

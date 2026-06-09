@@ -32,6 +32,7 @@
   <string name="postal_code">Codice postale</string>
   <string name="postal_code_error_text">Il campo del codice postale non può essere vuoto.</string>
   <string name="property_delivery_time">Consegnato alle</string>
+  <string name="property_dropoff">Drop-off location</string>
   <string name="property_eta">ETA</string>
   <string name="property_weight">Peso</string>
   <string name="repository">Repository</string>

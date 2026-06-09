@@ -4,8 +4,11 @@ package dev.itsvic.parceltracker.api
 import com.squareup.moshi.JsonClass
 import dev.itsvic.parceltracker.R
 import java.io.IOException
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.http.GET
@@ -14,6 +17,12 @@ import retrofit2.http.Query
 
 // Tracks parcels through the public dhl.de tracking data endpoint (int-verfolgen/data/search).
 // Unlike DhlDeliveryService (api-eu.dhl.com), this requires no API key.
+//
+// Estimated delivery: sendungsdetails.zustellung.zustellzeitfensterVon/Bis
+// Drop-off status:    derived from the shipment history. When the recipient's preferred
+//                     drop-off location is applied to a shipment, DHL adds an event with the
+//                     text "A preferred location was designated as a reception option…".
+//                     The exact place is not exposed in this response.
 object DhlDeDeliveryService : DeliveryService {
   override val nameResource: Int = R.string.service_dhl_de
   override val acceptsPostCode: Boolean = true
@@ -61,7 +70,37 @@ object DhlDeDeliveryService : DeliveryService {
               "")
         }
 
-    return Parcel(sendung.id, history, mapStatus(verlauf, details))
+    val properties = mutableMapOf<Int, String>()
+    val fmt = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+
+    // Estimated delivery window (zustellzeitfensterVon / Bis are plain YYYY-MM-DD strings).
+    details.zustellung?.let { z ->
+      val von = z.zustellzeitfensterVon?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
+      val bis = z.zustellzeitfensterBis?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
+      val text =
+          when {
+            von != null && bis != null && von != bis -> "${von.format(fmt)} – ${bis.format(fmt)}"
+            von != null -> von.format(fmt)
+            bis != null -> bis.format(fmt)
+            else -> null
+          }
+      if (text != null) {
+        val key =
+            if (details.istZugestellt == true) R.string.property_delivery_time
+            else R.string.property_eta
+        properties[key] = text
+      }
+    }
+
+    // Drop-off status: DHL records a history event when the recipient's preferred drop-off
+    // location is applied to a shipment. We force English (API_LANGUAGE) so this text match is
+    // stable. The exact place (garage, terrace, …) is not exposed without a DHL login.
+    val hasDropOff = verlauf.events.any { it.status.contains("preferred location", true) }
+    if (hasDropOff) {
+      properties[R.string.property_dropoff] = "Your preferred drop-off location"
+    }
+
+    return Parcel(sendung.id, history, mapStatus(verlauf, details), properties)
   }
 
   // Only `istZugestellt` / `fortschritt == max` (delivered) is confirmed from real data.
@@ -111,6 +150,8 @@ object DhlDeDeliveryService : DeliveryService {
     ): SearchResponse
   }
 
+  // ── search response models ──────────────────────────────────────────────────
+
   @JsonClass(generateAdapter = true)
   internal data class SearchResponse(
       val sendungen: List<Sendung>? = null,
@@ -129,6 +170,7 @@ object DhlDeDeliveryService : DeliveryService {
       val sendungsverlauf: Sendungsverlauf,
       val istZugestellt: Boolean? = null,
       val ruecksendung: Boolean? = null,
+      val zustellung: Zustellung? = null,
   )
 
   @JsonClass(generateAdapter = true)
@@ -144,5 +186,11 @@ object DhlDeDeliveryService : DeliveryService {
       val datum: String, // ISO-8601 with offset, e.g. 2026-04-17T12:01:27+02:00
       val status: String,
       val ruecksendung: Boolean? = null,
+  )
+
+  @JsonClass(generateAdapter = true)
+  internal data class Zustellung(
+      val zustellzeitfensterVon: String? = null,
+      val zustellzeitfensterBis: String? = null,
   )
 }

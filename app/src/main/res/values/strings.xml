@@ -46,6 +46,7 @@
   <string name="postal_code">Postal code</string>
   <string name="postal_code_error_text">Postal code must not be blank.</string>
   <string name="property_delivery_time">Delivered at</string>
+  <string name="property_dropoff">Drop-off location</string>
   <string name="property_eta">ETA</string>
   <string name="property_weight">Weight</string>
   <string name="repository">Repository</string>

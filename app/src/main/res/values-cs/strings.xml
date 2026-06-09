@@ -29,6 +29,7 @@
   <string name="postal_code">PSČ</string>
   <string name="postal_code_error_text">PSČ nesmí být prázdné.</string>
   <string name="property_delivery_time">Doručeno</string>
+  <string name="property_dropoff">Drop-off location</string>
   <string name="property_eta">Předpokládaný čas doručení</string>
   <string name="property_weight">Váha</string>
   <string name="repository">Repozitář</string>

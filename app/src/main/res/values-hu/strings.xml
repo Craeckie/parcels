@@ -29,6 +29,7 @@
   <string name="postal_code">Irányítószám</string>
   <string name="postal_code_error_text">Az irányítószám nem lehet üres.</string>
   <string name="property_delivery_time">Kiszállítva ekkor</string>
+  <string name="property_dropoff">Drop-off location</string>
   <string name="property_eta">Becsült érkezés</string>
   <string name="property_weight">Súly</string>
   <string name="repository">Forráskód</string>

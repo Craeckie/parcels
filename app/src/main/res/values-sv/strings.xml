@@ -31,6 +31,7 @@
   <string name="postal_code">Postnummer</string>
   <string name="postal_code_error_text">Postnummer får inte lämnas tom.</string>
   <string name="property_delivery_time">Levereras kl.</string>
+  <string name="property_dropoff">Drop-off location</string>
   <string name="property_eta">ETA</string>
   <string name="property_weight">Vikt</string>
   <string name="repository">Repo</string>
