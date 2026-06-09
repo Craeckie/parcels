@@ -1,0 +1,7 @@
+- Added DHL Germany (dhl.de) carrier — no API key required
+- Added pull-to-refresh to parcel list
+- Added automatic backup and restore
+- Added duplicate parcel prevention
+- Added "Open tracking page" button in parcel details
+- DHL Germany: shows estimated delivery time and drop-off location
+- Fixed crash when parcel tracking history is empty
