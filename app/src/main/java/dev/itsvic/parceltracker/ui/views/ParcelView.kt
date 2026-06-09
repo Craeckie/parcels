@@ -72,7 +72,8 @@ fun ParcelView(
   val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
   var expanded by remember { mutableStateOf(false) }
   val uriHandler = LocalUriHandler.current
-  val trackingUrl = remember(service, parcel.id) { getDeliveryService(service)?.trackingUrl(parcel.id) }
+  val trackingUrl =
+      remember(service, parcel.id) { getDeliveryService(service)?.trackingUrl(parcel.id) }
 
   Scaffold(
       topBar = {

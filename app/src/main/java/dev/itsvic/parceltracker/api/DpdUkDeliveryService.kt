@@ -38,7 +38,7 @@ object DpdUkDeliveryService : DeliveryService {
         }
 
     val status =
-        when (val statusCode = events.data.first().eventCode) {
+        when (val statusCode = events.data.firstOrNull()?.eventCode) {
           "000" -> Status.Preadvice
           "009" -> Status.InTransit
           "004" -> Status.InWarehouse

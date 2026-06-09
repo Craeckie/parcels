@@ -18,7 +18,7 @@ import dev.itsvic.parceltracker.db.Parcel
 
 const val CHANNEL_ID = "ParcelTrackerEvents"
 
-fun Context.sendNotification(parcel: Parcel, status: Status, event: ParcelHistoryItem) {
+fun Context.sendNotification(parcel: Parcel, status: Status, event: ParcelHistoryItem?) {
   val context = this
   val statusString = getString(status.nameResource)
 
@@ -35,7 +35,7 @@ fun Context.sendNotification(parcel: Parcel, status: Status, event: ParcelHistor
       NotificationCompat.Builder(this, CHANNEL_ID)
           .setSmallIcon(R.drawable.package_2)
           .setContentTitle("${parcel.humanName}: $statusString")
-          .setContentText(event.description)
+          .setContentText(event?.description ?: statusString)
           .setPriority(NotificationCompat.PRIORITY_DEFAULT)
           .setContentIntent(pendingIntent)
           .setAutoCancel(true)

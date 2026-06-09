@@ -31,7 +31,7 @@ object EvriDeliveryService : DeliveryService {
 
     val urn = urnResp.parcelIdentifiers.first().urn
     val parcelResp = service.getParcel(urn)
-    val parcel = parcelResp.results.first()
+    val parcel = parcelResp.results.firstOrNull() ?: throw ParcelNonExistentException()
 
     val history =
         parcel.trackingEvents.map {
@@ -41,16 +41,16 @@ object EvriDeliveryService : DeliveryService {
               "")
         }
 
+    val stageCode = parcel.trackingEvents.firstOrNull()?.trackingStage?.trackingStageCode
     val status =
-        when (parcel.trackingEvents.first().trackingStage.trackingStageCode) {
+        when (stageCode) {
+          null -> Status.Unknown
           "1" -> Status.Preadvice
           "2" -> Status.InWarehouse
           "3" -> Status.InTransit
           "4_COURIER" -> Status.OutForDelivery
           "5_COURIER" -> Status.Delivered
-          else ->
-              logUnknownStatus(
-                  "Evri", parcel.trackingEvents.first().trackingStage.trackingStageCode)
+          else -> logUnknownStatus("Evri", stageCode)
         }
 
     return Parcel(trackingId, history, status)

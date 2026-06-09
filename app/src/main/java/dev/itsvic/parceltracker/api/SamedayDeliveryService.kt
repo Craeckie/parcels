@@ -44,6 +44,8 @@ open class SamedayDeliveryService(region: String, override val nameResource: Int
               else if (it.country.isNotBlank()) it.country else "")
         }
 
+    if (resp.awbHistory.isEmpty()) throw ParcelNonExistentException()
+
     val status =
         when (val id = resp.awbHistory.first().statusStateId) {
           1 -> Status.Preadvice

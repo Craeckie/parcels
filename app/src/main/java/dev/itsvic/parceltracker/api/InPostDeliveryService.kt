@@ -43,6 +43,8 @@ object InPostDeliveryService : DeliveryService {
 
     val parcelData = response.firstOrNull() ?: throw ParcelNonExistentException()
 
+    if (parcelData.events.isEmpty()) throw ParcelNonExistentException()
+
     return Parcel(
         parcelData.mainTrackingNumber,
         eventsToHistory(parcelData.events),

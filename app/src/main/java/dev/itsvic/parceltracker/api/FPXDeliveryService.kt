@@ -48,6 +48,8 @@ object FPXDeliveryService : DeliveryService {
 
     val parcelData = response.data.firstOrNull() ?: throw ParcelNonExistentException()
 
+    if (parcelData.tracks.isEmpty()) throw ParcelNonExistentException()
+
     return Parcel(
         trackingId,
         tracksToHistory(parcelData.tracks),

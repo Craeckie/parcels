@@ -28,7 +28,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableIntState
@@ -44,17 +43,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.squareup.moshi.JsonDataException
 import dev.itsvic.parceltracker.api.APIKeyMissingException
-import dev.itsvic.parceltracker.api.Service
 import dev.itsvic.parceltracker.api.Parcel as APIParcel
 import dev.itsvic.parceltracker.api.ParcelHistoryItem
 import dev.itsvic.parceltracker.api.ParcelNonExistentException
+import dev.itsvic.parceltracker.api.Service
 import dev.itsvic.parceltracker.api.Status
 import dev.itsvic.parceltracker.api.getParcel
 import dev.itsvic.parceltracker.db.Parcel
@@ -67,16 +70,13 @@ import dev.itsvic.parceltracker.ui.views.AddEditParcelView
 import dev.itsvic.parceltracker.ui.views.HomeView
 import dev.itsvic.parceltracker.ui.views.ParcelView
 import dev.itsvic.parceltracker.ui.views.SettingsView
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import androidx.lifecycle.lifecycleScope
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
 import kotlinx.serialization.Serializable
 import okio.IOException
 
@@ -327,7 +327,9 @@ fun ParcelAppNavigation(
               if (!demoMode) {
                 // update parcel status
                 val zone = ZoneId.systemDefault()
-                val lastChange = apiParcel!!.history.first().time.atZone(zone).toInstant()
+                val lastChange =
+                    apiParcel!!.history.firstOrNull()?.time?.atZone(zone)?.toInstant()
+                        ?: Instant.EPOCH
                 val status =
                     ParcelStatus(
                         dbParcel.id,
@@ -478,9 +480,7 @@ fun ParcelAppNavigation(
                     onClick = {
                       duplicateParcel = null
                       pendingParcel = null
-                      navController.navigate(route = ParcelPage(existing.id)) {
-                        popUpTo(HomePage)
-                      }
+                      navController.navigate(route = ParcelPage(existing.id)) { popUpTo(HomePage) }
                     }) {
                       Text(stringResource(R.string.duplicate_view_existing))
                     }

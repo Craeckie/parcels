@@ -37,7 +37,7 @@ object MagyarPostaDeliveryService : DeliveryService {
         }
 
     val events = resp[trackingId]
-    if (events == null) {
+    if (events.isNullOrEmpty()) {
       throw ParcelNonExistentException()
     }
 

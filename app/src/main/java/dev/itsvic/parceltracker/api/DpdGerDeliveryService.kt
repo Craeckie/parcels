@@ -38,7 +38,7 @@ object DpdGerDeliveryService : DeliveryService {
           "AT_DELIVERY_DEPOT" -> Status.InWarehouse
           "OUT_FOR_DELIVERY" -> Status.OutForDelivery
           "DELIVERED" -> Status.Delivered
-          else -> logUnknownStatus("DPD Germany", current!!)
+          else -> logUnknownStatus("DPD Germany", current ?: "unknown")
         }
 
     val h =

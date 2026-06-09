@@ -13,6 +13,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import dev.itsvic.parceltracker.api.getParcel
 import dev.itsvic.parceltracker.db.ParcelStatus
+import java.time.Instant
 import java.time.ZoneId
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.Dispatchers
@@ -47,7 +48,8 @@ class NotificationWorker(context: Context, params: WorkerParameters) :
               continue
             }
 
-        val lastChange = apiParcel.history.first().time.atZone(zone).toInstant()
+        val newestEvent = apiParcel.history.firstOrNull()
+        val lastChange = newestEvent?.time?.atZone(zone)?.toInstant() ?: Instant.EPOCH
 
         when {
           oldStatus == null -> {
@@ -55,10 +57,9 @@ class NotificationWorker(context: Context, params: WorkerParameters) :
             statusDao.insert(ParcelStatus(parcel.id, apiParcel.currentStatus, lastChange))
           }
 
-          oldStatus.lastChange != lastChange -> {
+          oldStatus.lastChange != lastChange || oldStatus.status != apiParcel.currentStatus -> {
             Log.d("NotificationWorker", "Parcel has had updates since then, push a notification!")
-            applicationContext.sendNotification(
-                parcel, apiParcel.currentStatus, apiParcel.history.first())
+            applicationContext.sendNotification(parcel, apiParcel.currentStatus, newestEvent)
             statusDao.update(ParcelStatus(parcel.id, apiParcel.currentStatus, lastChange))
           }
 

@@ -49,7 +49,7 @@ object DhlDeliveryService : DeliveryService {
           throw ParcelNonExistentException()
         }
 
-    val shipment = resp.shipments.first()
+    val shipment = resp.shipments.firstOrNull() ?: throw ParcelNonExistentException()
 
     val status =
         when (shipment.status.statusCode) {
