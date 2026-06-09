@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      HAVE_KEYSTORE: ${{ secrets.KEYSTORE_BASE64 != '' && secrets.KEYSTORE_PASSWORD != '' && secrets.KEY_ALIAS != '' }}
+      HAVE_KEYSTORE: ${{ secrets.KEYSTORE_BASE64 != '' && secrets.KEYSTORE_PASSWORD != '' }}
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
@@ -44,6 +44,10 @@ jobs:
           BUILD_TOOLS=$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -n1)
           UNSIGNED=app/build/outputs/apk/release/app-release-unsigned.apk
           SIGNED=app/build/outputs/apk/release/app-release-signed.apk
+          if [ -z "$KEY_ALIAS" ]; then
+            KEY_ALIAS=$(keytool -list -storepass "$KEYSTORE_PASSWORD" -keystore "$RUNNER_TEMP/release.jks" 2>/dev/null \
+              | grep "PrivateKeyEntry" | awk -F',' '{print $1}' | tr -d ' ')
+          fi
           "${BUILD_TOOLS}apksigner" sign \
             --ks "$RUNNER_TEMP/release.jks" \
             --ks-key-alias "$KEY_ALIAS" \
