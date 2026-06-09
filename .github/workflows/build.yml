@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      HAVE_KEYSTORE: ${{ secrets.KEYSTORE_BASE64 != '' }}
+      HAVE_KEYSTORE: ${{ secrets.KEYSTORE_BASE64 != '' && secrets.KEYSTORE_PASSWORD != '' && secrets.KEY_ALIAS != '' }}
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
