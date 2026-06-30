@@ -166,17 +166,34 @@ class MainActivity : ComponentActivity() {
   override fun onNewIntent(intent: Intent) {
     super.onNewIntent(intent)
     parcelToOpen.intValue = intent.getIntExtra("openParcel", -1)
-    deepLinkPage.value = parseDeepLink(intent)
+    val parsedDeepLink = parseDeepLink(intent)
+    if (intent.action == Intent.ACTION_VIEW && parsedDeepLink == null && intent.data?.host in listOf("www.dhl.de", "www.dhl.com")) {
+      // Invalid DHL tracking link
+      Toast.makeText(this, getString(R.string.invalid_tracking_link), Toast.LENGTH_SHORT).show()
+    }
+    deepLinkPage.value = parsedDeepLink
   }
 
-  private fun parseDeepLink(intent: Intent): AddParcelPage? {
+  internal fun parseDeepLink(intent: Intent): AddParcelPage? {
     if (intent.action != Intent.ACTION_VIEW) return null
     val uri: Uri = intent.data ?: return null
-    if (uri.host == "www.dhl.de" && uri.path?.contains("dhl-sendungsverfolgung") == true) {
-      val piececode = uri.getQueryParameter("piececode") ?: return null
-      return AddParcelPage(trackingId = piececode, serviceOrdinal = Service.DHL_DE.ordinal)
+
+    val trackingId = when {
+      uri.host == "www.dhl.de" && uri.path?.contains("dhl-sendungsverfolgung") == true -> {
+        uri.getQueryParameter("piececode")
+      }
+      uri.host == "www.dhl.com" && uri.path?.contains("tracking-parcel.html") == true -> {
+        uri.getQueryParameter("tracking-id")
+      }
+      else -> return null
     }
-    return null
+
+    // Validate tracking ID: non-empty and alphanumeric only
+    if (trackingId.isNullOrEmpty() || !trackingId.matches(Regex("^[a-zA-Z0-9]+$"))) {
+      return null
+    }
+
+    return AddParcelPage(trackingId = trackingId, serviceOrdinal = Service.DHL_DE.ordinal)
   }
 
   @RequiresApi(Build.VERSION_CODES.TIRAMISU)
