@@ -25,3 +25,7 @@ keystore.properties
 
 # Local-only research notes (never committed)
 *.local.md
+
+# Signed APK artifacts (build outputs, should not be committed)
+my-app-signed.apk
+my-app-signed.apk.idsig
