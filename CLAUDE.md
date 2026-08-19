@@ -68,6 +68,24 @@ There are **two DHL providers**:
 - `DhlDeDeliveryService` — uses the public `dhl.de` tracking endpoint, **no API key required**, 20-digit tracking numbers. This is the actively maintained one.
 - `DhlDeliveryService` — uses the official `api-eu.dhl.com` Tracking API, **requires a user-supplied DHL API key**. Not a focus for new development.
 
+### Carrier tracking-website links (open in app / open from app)
+
+Two independent, optional features per carrier — a carrier can have either, both, or neither. DHL (`DhlDeDeliveryService`) and GLS (`GLSGlobalDeliveryService`) implement both; use them as reference.
+
+**"Open in app"** — tapping a carrier's own tracking link (e.g. from an SMS/email) opens this app instead of a browser, pre-filling the Add Parcel form.
+1. Add an `<intent-filter>` in `AndroidManifest.xml` under `.MainActivity`, matching `android:scheme="https"`, `android:host="<carrier tracking domain>"`, `android:pathPrefix="<path the tracking page lives at>"`.
+2. Add a branch in `MainActivity.parseDeepLink()` matching on `uri.host`/`uri.path`, extracting the tracking ID (and postal code, if the carrier's `DeliveryService.requiresPostCode` or `acceptsPostCode`) via `uri.getQueryParameter(...)`.
+   - Always validate the tracking ID (non-empty, and restrict to a safe charset like `^[a-zA-Z0-9]+$`) before returning — an unvalidated ID becomes user-visible text and a `getParcel` argument.
+   - Return `AddParcelPage(trackingId = ..., serviceOrdinal = Service.<X>.ordinal, postalCode = ... ?: "")`.
+3. Add the new host to the "invalid tracking link" host list in `onNewIntent()` so malformed links from that domain show the `invalid_tracking_link` toast instead of silently no-opping.
+4. `AddParcelPage` already carries `postalCode` — if a new carrier's link needs more fields than `trackingId`/`postalCode`, extend that data class and thread the new field through to `AddEditParcelView`'s `initial*` params (see `initialPostalCode`).
+5. Add unit tests in `MainActivityTest.kt` mirroring the existing DHL/GLS cases (happy path, missing field, empty field, non-matching host).
+
+**"Open from app"** — the parcel detail screen (`ParcelView`) shows an "open tracking page" icon button that opens the carrier's public tracking URL in the user's browser.
+1. Override `trackingUrl(trackingId: String, postalCode: String? = null): String?` on the `DeliveryService` object, returning the carrier's public tracking URL for that ID (and postal code, if the URL needs one).
+2. `ParcelView` already resolves and wires this up (`getDeliveryService(service)?.trackingUrl(parcel.id, postalCode)`) — no UI changes needed.
+3. If a carrier has region-specific tracking domains (e.g. GLS has different national sites), only override `trackingUrl` on the concrete `object` for the region you've verified, not the shared open class — don't guess at URLs for regions you haven't confirmed.
+
 ### Data model
 
 There are two `Parcel` types — don't confuse them:

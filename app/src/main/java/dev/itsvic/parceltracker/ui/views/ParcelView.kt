@@ -61,6 +61,7 @@ fun ParcelView(
     parcel: Parcel,
     humanName: String,
     service: Service,
+    postalCode: String?,
     isArchived: Boolean,
     archivePromptDismissed: Boolean,
     onBackPressed: () -> Unit,
@@ -73,7 +74,9 @@ fun ParcelView(
   var expanded by remember { mutableStateOf(false) }
   val uriHandler = LocalUriHandler.current
   val trackingUrl =
-      remember(service, parcel.id) { getDeliveryService(service)?.trackingUrl(parcel.id) }
+      remember(service, parcel.id, postalCode) {
+        getDeliveryService(service)?.trackingUrl(parcel.id, postalCode)
+      }
 
   Scaffold(
       topBar = {
@@ -242,6 +245,7 @@ private fun ParcelViewPreview() {
         parcel,
         "My precious package",
         Service.EXAMPLE,
+        postalCode = null,
         isArchived = false,
         archivePromptDismissed = false,
         onBackPressed = {},

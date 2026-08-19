@@ -55,6 +55,7 @@ fun AddEditParcelView(
     onCompleted: (Parcel) -> Unit,
     initialTrackingId: String = parcel?.parcelId ?: "",
     initialService: Service = parcel?.service ?: Service.UNDEFINED,
+    initialPostalCode: String = parcel?.postalCode ?: "",
 ) {
   val isEdit = parcel != null
 
@@ -62,8 +63,10 @@ fun AddEditParcelView(
   var nameError by remember { mutableStateOf(false) }
   var trackingId by remember { mutableStateOf(initialTrackingId) }
   var idError by remember { mutableStateOf(false) }
-  var specifyPostalCode by remember { mutableStateOf(parcel?.postalCode != null) }
-  var postalCode by remember { mutableStateOf(parcel?.postalCode ?: "") }
+  var specifyPostalCode by remember {
+    mutableStateOf(parcel?.postalCode != null || initialPostalCode.isNotBlank())
+  }
+  var postalCode by remember { mutableStateOf(initialPostalCode) }
   var postalCodeError by remember { mutableStateOf(false) }
   var service by remember { mutableStateOf(initialService) }
   var serviceError by remember { mutableStateOf(false) }

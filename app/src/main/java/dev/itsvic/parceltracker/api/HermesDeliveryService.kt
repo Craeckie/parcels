@@ -20,6 +20,9 @@ object HermesDeliveryService : DeliveryService {
   override val requiresPostCode: Boolean
     get() = false
 
+  override fun trackingUrl(trackingId: String, postalCode: String?) =
+      "https://www.myhermes.de/empfangen/sendungsverfolgung/sendungsinformation/#$trackingId"
+
   override suspend fun getParcel(
       context: Context,
       trackingId: String,

@@ -15,7 +15,12 @@ import retrofit2.http.Query
 
 // Reverse-engineered from their private API. Pretty basic at least
 
-object GLSGlobalDeliveryService : GLSDeliveryService(R.string.service_gls, "GROUP")
+object GLSGlobalDeliveryService : GLSDeliveryService(R.string.service_gls, "GROUP") {
+  // Only verified for gls-pakete.de (Germany); GLS's other national sites use different
+  // domains/URL schemes, so this is not added to the shared GLSDeliveryService base class.
+  override fun trackingUrl(trackingId: String, postalCode: String?) =
+      "https://www.gls-pakete.de/reach-sendungsverfolgung?match=$trackingId&trackingNumber=$trackingId&postCode=${postalCode ?: ""}"
+}
 
 object GLSHungaryDeliveryService : GLSDeliveryService(R.string.service_gls_hungary, "HU")
 

@@ -167,8 +167,11 @@ class MainActivity : ComponentActivity() {
     super.onNewIntent(intent)
     parcelToOpen.intValue = intent.getIntExtra("openParcel", -1)
     val parsedDeepLink = parseDeepLink(intent)
-    if (intent.action == Intent.ACTION_VIEW && parsedDeepLink == null && intent.data?.host in listOf("www.dhl.de", "www.dhl.com")) {
-      // Invalid DHL tracking link
+    if (intent.action == Intent.ACTION_VIEW &&
+        parsedDeepLink == null &&
+        intent.data?.host in
+            listOf("www.dhl.de", "www.dhl.com", "www.gls-pakete.de", "www.myhermes.de")) {
+      // Invalid tracking link
       Toast.makeText(this, getString(R.string.invalid_tracking_link), Toast.LENGTH_SHORT).show()
     }
     deepLinkPage.value = parsedDeepLink
@@ -178,15 +181,43 @@ class MainActivity : ComponentActivity() {
     if (intent.action != Intent.ACTION_VIEW) return null
     val uri: Uri = intent.data ?: return null
 
-    val trackingId = when {
-      uri.host == "www.dhl.de" && uri.path?.contains("dhl-sendungsverfolgung") == true -> {
-        uri.getQueryParameter("piececode")
+    if (uri.host == "www.myhermes.de" &&
+        uri.path?.contains("sendungsverfolgung/sendungsinformation") == true) {
+      // The tracking ID lives in the URL fragment, not a query param, e.g.
+      // .../sendungsinformation/#H1019000516
+      val trackingId = uri.fragment
+
+      if (trackingId.isNullOrEmpty() || !trackingId.matches(Regex("^[a-zA-Z0-9]+$"))) {
+        return null
       }
-      uri.host == "www.dhl.com" && uri.path?.contains("tracking-parcel.html") == true -> {
-        uri.getQueryParameter("tracking-id")
-      }
-      else -> return null
+
+      return AddParcelPage(trackingId = trackingId, serviceOrdinal = Service.HERMES.ordinal)
     }
+
+    if (uri.host == "www.gls-pakete.de" && uri.path?.contains("reach-sendungsverfolgung") == true) {
+      val trackingId = uri.getQueryParameter("trackingNumber")
+      val postCode = uri.getQueryParameter("postCode")
+
+      if (trackingId.isNullOrEmpty() || !trackingId.matches(Regex("^[a-zA-Z0-9]+$"))) {
+        return null
+      }
+
+      return AddParcelPage(
+          trackingId = trackingId,
+          serviceOrdinal = Service.GLS.ordinal,
+          postalCode = postCode ?: "")
+    }
+
+    val trackingId =
+        when {
+          uri.host == "www.dhl.de" && uri.path?.contains("dhl-sendungsverfolgung") == true -> {
+            uri.getQueryParameter("piececode")
+          }
+          uri.host == "www.dhl.com" && uri.path?.contains("tracking-parcel.html") == true -> {
+            uri.getQueryParameter("tracking-id")
+          }
+          else -> return null
+        }
 
     // Validate tracking ID: non-empty and alphanumeric only
     if (trackingId.isNullOrEmpty() || !trackingId.matches(Regex("^[a-zA-Z0-9]+$"))) {
@@ -230,7 +261,12 @@ class MainActivity : ComponentActivity() {
 
 @Serializable data class ParcelPage(val parcelDbId: Int)
 
-@Serializable data class AddParcelPage(val trackingId: String = "", val serviceOrdinal: Int = -1)
+@Serializable
+data class AddParcelPage(
+    val trackingId: String = "",
+    val serviceOrdinal: Int = -1,
+    val postalCode: String = "",
+)
 
 @Serializable data class EditParcelPage(val parcelDbId: Int)
 
@@ -415,6 +451,7 @@ fun ParcelAppNavigation(
               if (dbParcel.isArchived) fakeApiParcel!! else apiParcel!!,
               dbParcel.humanName,
               dbParcel.service,
+              dbParcel.postalCode,
               dbParcel.isArchived,
               dbParcel.archivePromptDismissed,
               onBackPressed = { navController.popBackStack() },
@@ -528,6 +565,7 @@ fun ParcelAppNavigation(
           null,
           initialTrackingId = route.trackingId,
           initialService = initialService,
+          initialPostalCode = route.postalCode,
           onBackPressed = { navController.popBackStack() },
           onCompleted = {
             if (demoMode) {

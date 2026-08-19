@@ -44,6 +44,24 @@
                     android:host="www.dhl.com"
                     android:pathPrefix="/de-de/home/tracking/tracking-parcel.html" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="www.gls-pakete.de"
+                    android:pathPrefix="/reach-sendungsverfolgung" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="www.myhermes.de"
+                    android:pathPrefix="/empfangen/sendungsverfolgung/sendungsinformation" />
+            </intent-filter>
         </activity>
 
         <activity android:name=".LogcatDumperActivity"
