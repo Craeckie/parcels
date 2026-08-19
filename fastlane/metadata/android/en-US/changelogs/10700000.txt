@@ -1,0 +1,3 @@
+- Added support for opening DHL tracking links from www.dhl.com
+- Added support for opening GLS and Hermes tracking links from their sites
+- Added support for adding parcels via the Android share sheet
