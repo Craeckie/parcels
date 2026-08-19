@@ -231,4 +231,74 @@ class MainActivityTest {
 
     assertNull(result)
   }
+
+  private fun createSendIntent(sharedText: String): Intent {
+    return Intent(Intent.ACTION_SEND).apply {
+      type = "text/plain"
+      putExtra(Intent.EXTRA_TEXT, sharedText)
+    }
+  }
+
+  @Test
+  fun parseDeepLink_sharedDhlUrl_extractsPiececodeAndSelectsDhlDe() {
+    val intent =
+        createSendIntent(
+            "https://www.dhl.de/de/privatkunden/dhl-sendungsverfolgung?piececode=12345678901234567890")
+    val result = MainActivity().parseDeepLink(intent)
+
+    assertNotNull(result)
+    assertEquals("12345678901234567890", result?.trackingId)
+    assertEquals(Service.DHL_DE.ordinal, result?.serviceOrdinal)
+  }
+
+  @Test
+  fun parseDeepLink_sharedTextWithSurroundingWords_stillExtractsUrl() {
+    val intent =
+        createSendIntent(
+            "Look at this: https://www.gls-pakete.de/reach-sendungsverfolgung?trackingNumber=37389152443&postCode=76133 thanks!")
+    val result = MainActivity().parseDeepLink(intent)
+
+    assertNotNull(result)
+    assertEquals("37389152443", result?.trackingId)
+    assertEquals("76133", result?.postalCode)
+    assertEquals(Service.GLS.ordinal, result?.serviceOrdinal)
+  }
+
+  @Test
+  fun parseDeepLink_sharedTextWithoutUrl_returnsNull() {
+    val intent = createSendIntent("just some random text with no link")
+    val result = MainActivity().parseDeepLink(intent)
+
+    assertNull(result)
+  }
+
+  @Test
+  fun parseDeepLink_sharedNonMatchingUrl_returnsNull() {
+    val intent = createSendIntent("https://www.example.com")
+    val result = MainActivity().parseDeepLink(intent)
+
+    assertNull(result)
+  }
+
+  @Test
+  fun parseDeepLink_sendIntentWithWrongMimeType_returnsNull() {
+    val intent =
+        Intent(Intent.ACTION_SEND).apply {
+          type = "image/png"
+          putExtra(
+              Intent.EXTRA_TEXT,
+              "https://www.dhl.de/de/privatkunden/dhl-sendungsverfolgung?piececode=12345678901234567890")
+        }
+    val result = MainActivity().parseDeepLink(intent)
+
+    assertNull(result)
+  }
+
+  @Test
+  fun parseDeepLink_sendIntentWithoutExtraText_returnsNull() {
+    val intent = Intent(Intent.ACTION_SEND).apply { type = "text/plain" }
+    val result = MainActivity().parseDeepLink(intent)
+
+    assertNull(result)
+  }
 }

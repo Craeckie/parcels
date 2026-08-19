@@ -62,6 +62,11 @@
                     android:host="www.myhermes.de"
                     android:pathPrefix="/empfangen/sendungsverfolgung/sendungsinformation" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
         </activity>
 
         <activity android:name=".LogcatDumperActivity"

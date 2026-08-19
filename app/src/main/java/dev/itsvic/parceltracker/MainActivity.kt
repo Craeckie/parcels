@@ -167,19 +167,34 @@ class MainActivity : ComponentActivity() {
     super.onNewIntent(intent)
     parcelToOpen.intValue = intent.getIntExtra("openParcel", -1)
     val parsedDeepLink = parseDeepLink(intent)
-    if (intent.action == Intent.ACTION_VIEW &&
-        parsedDeepLink == null &&
-        intent.data?.host in
-            listOf("www.dhl.de", "www.dhl.com", "www.gls-pakete.de", "www.myhermes.de")) {
+    val uri = extractTrackingUri(intent)
+    if (parsedDeepLink == null &&
+        uri?.host in listOf("www.dhl.de", "www.dhl.com", "www.gls-pakete.de", "www.myhermes.de")) {
       // Invalid tracking link
       Toast.makeText(this, getString(R.string.invalid_tracking_link), Toast.LENGTH_SHORT).show()
     }
     deepLinkPage.value = parsedDeepLink
   }
 
+  /**
+   * Extracts the URI to parse for a tracking link from an intent - either the data of an
+   * ACTION_VIEW intent (opening a link directly), or the first URL found in the shared text of an
+   * ACTION_SEND intent (sharing a link into the app).
+   */
+  internal fun extractTrackingUri(intent: Intent): Uri? {
+    return when (intent.action) {
+      Intent.ACTION_VIEW -> intent.data
+      Intent.ACTION_SEND -> {
+        if (intent.type != "text/plain") return null
+        val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT) ?: return null
+        Regex("https?://\\S+").find(sharedText)?.value?.let(Uri::parse)
+      }
+      else -> null
+    }
+  }
+
   internal fun parseDeepLink(intent: Intent): AddParcelPage? {
-    if (intent.action != Intent.ACTION_VIEW) return null
-    val uri: Uri = intent.data ?: return null
+    val uri = extractTrackingUri(intent) ?: return null
 
     if (uri.host == "www.myhermes.de" &&
         uri.path?.contains("sendungsverfolgung/sendungsinformation") == true) {
