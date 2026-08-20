@@ -3,8 +3,10 @@ package dev.itsvic.parceltracker.api
 import android.content.Context
 import com.squareup.moshi.JsonClass
 import dev.itsvic.parceltracker.R
-import java.time.LocalDateTime
+import java.time.Instant
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.http.GET
@@ -57,11 +59,38 @@ object HermesDeliveryService : DeliveryService {
         statusReached.map {
           ParcelHistoryItem(
               it.historyText!!,
-              LocalDateTime.parse(it.timestamp, DateTimeFormatter.ISO_DATE_TIME),
+              Instant.parse(it.timestamp).atZone(ZoneId.systemDefault()).toLocalDateTime(),
               "")
         }
 
-    return Parcel(trackingId, history, status)
+    val properties = mutableMapOf<Int, String>()
+    val fmt = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+
+    resp.forecast?.let { f ->
+      val from =
+          f.deliveryTimeFromUTC?.let {
+            Instant.parse(it).atZone(ZoneId.systemDefault()).toLocalDate()
+          }
+      val to =
+          f.deliveryTimeToUTC?.let {
+            Instant.parse(it).atZone(ZoneId.systemDefault()).toLocalDate()
+          }
+      val text: String? =
+          when {
+            from != null && to != null && from != to -> "${from.format(fmt)} – ${to.format(fmt)}"
+            from != null -> from.format(fmt)
+            to != null -> to.format(fmt)
+            else -> null
+          }
+      if (text != null) {
+        val key =
+            if (status == Status.Delivered) R.string.property_delivery_time
+            else R.string.property_eta
+        properties[key] = text
+      }
+    }
+
+    return Parcel(trackingId, history, status, properties)
   }
 
   private val retrofit =
@@ -81,7 +110,8 @@ object HermesDeliveryService : DeliveryService {
   @JsonClass(generateAdapter = true)
   internal data class HermesParcelData(
       val barcode: String,
-      val parcelProgress: List<HermesParcelHistory>
+      val parcelProgress: List<HermesParcelHistory>,
+      val forecast: HermesForecast?
   )
 
   @JsonClass(generateAdapter = true)
@@ -90,5 +120,11 @@ object HermesDeliveryService : DeliveryService {
       val status: String,
       val parcelStatus: String,
       val historyText: String?
+  )
+
+  @JsonClass(generateAdapter = true)
+  internal data class HermesForecast(
+      val deliveryTimeFromUTC: String?,
+      val deliveryTimeToUTC: String?
   )
 }
