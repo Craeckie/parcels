@@ -90,6 +90,8 @@ object HermesDeliveryService : DeliveryService {
       }
     }
 
+    resp.atg?.companyName?.let { properties[R.string.property_sender] = it }
+
     return Parcel(trackingId, history, status, properties)
   }
 
@@ -111,7 +113,8 @@ object HermesDeliveryService : DeliveryService {
   internal data class HermesParcelData(
       val barcode: String,
       val parcelProgress: List<HermesParcelHistory>,
-      val forecast: HermesForecast?
+      val forecast: HermesForecast?,
+      val atg: HermesSender?
   )
 
   @JsonClass(generateAdapter = true)
@@ -126,5 +129,11 @@ object HermesDeliveryService : DeliveryService {
   internal data class HermesForecast(
       val deliveryTimeFromUTC: String?,
       val deliveryTimeToUTC: String?
+  )
+
+  // "atg" (advertiser/sender) carries the merchant's display name and logo.
+  @JsonClass(generateAdapter = true)
+  internal data class HermesSender(
+      val companyName: String?,
   )
 }

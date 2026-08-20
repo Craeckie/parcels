@@ -34,6 +34,7 @@
   <string name="property_delivery_time">تم التوصيل عند</string>
   <string name="property_dropoff">Drop-off location</string>
   <string name="property_eta">الوقت المتوقع للوصول</string>
+  <string name="property_sender">Sender</string>
   <string name="property_weight">الوزن</string>
   <string name="repository">المستودع</string>
   <string name="save">حفظ</string>

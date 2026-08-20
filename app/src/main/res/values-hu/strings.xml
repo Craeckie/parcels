@@ -31,6 +31,7 @@
   <string name="property_delivery_time">Kiszállítva ekkor</string>
   <string name="property_dropoff">Drop-off location</string>
   <string name="property_eta">Becsült érkezés</string>
+  <string name="property_sender">Sender</string>
   <string name="property_weight">Súly</string>
   <string name="repository">Forráskód</string>
   <string name="save">Mentés</string>

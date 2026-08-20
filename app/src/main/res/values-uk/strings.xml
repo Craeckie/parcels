@@ -33,6 +33,7 @@
   <string name="property_delivery_time">Доставлено </string>
   <string name="property_dropoff">Drop-off location</string>
   <string name="property_eta">Очікуваний час</string>
+  <string name="property_sender">Sender</string>
   <string name="property_weight">Вага</string>
   <string name="repository">Репозитарій</string>
   <string name="save">Зберегти</string>

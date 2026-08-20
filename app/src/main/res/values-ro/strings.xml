@@ -36,6 +36,7 @@
   <string name="property_delivery_time">Livrat la</string>
   <string name="property_dropoff">Drop-off location</string>
   <string name="property_eta">Timp estimat</string>
+  <string name="property_sender">Sender</string>
   <string name="property_weight">Greutate</string>
   <string name="repository">Depozit</string>
   <string name="save">Salvează</string>

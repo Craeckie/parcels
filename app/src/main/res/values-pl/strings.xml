@@ -34,6 +34,7 @@
   <string name="property_delivery_time">Dostarczono o</string>
   <string name="property_dropoff">Drop-off location</string>
   <string name="property_eta">Czas dotarcia</string>
+  <string name="property_sender">Sender</string>
   <string name="property_weight">Waga</string>
   <string name="repository">Repozytorium</string>
   <string name="save">Zapisz</string>

@@ -34,6 +34,7 @@
   <string name="property_delivery_time">配送先</string>
   <string name="property_dropoff">Drop-off location</string>
   <string name="property_eta">ETA</string>
+  <string name="property_sender">Sender</string>
   <string name="property_weight">重さ</string>
   <string name="repository">リポジトリ</string>
   <string name="save">保存</string>

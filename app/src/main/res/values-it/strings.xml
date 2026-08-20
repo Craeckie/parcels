@@ -34,6 +34,7 @@
   <string name="property_delivery_time">Consegnato alle</string>
   <string name="property_dropoff">Drop-off location</string>
   <string name="property_eta">ETA</string>
+  <string name="property_sender">Sender</string>
   <string name="property_weight">Peso</string>
   <string name="repository">Repository</string>
   <string name="save">Salva</string>

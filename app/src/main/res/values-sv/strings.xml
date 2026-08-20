@@ -33,6 +33,7 @@
   <string name="property_delivery_time">Levereras kl.</string>
   <string name="property_dropoff">Drop-off location</string>
   <string name="property_eta">ETA</string>
+  <string name="property_sender">Sender</string>
   <string name="property_weight">Vikt</string>
   <string name="repository">Repo</string>
   <string name="save">Spara</string>

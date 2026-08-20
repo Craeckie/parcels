@@ -27,6 +27,7 @@
   <string name="property_delivery_time">นำส่งพัสดุแล้วเมื่อ</string>
   <string name="property_dropoff">Drop-off location</string>
   <string name="property_eta">จะถีงประมาณ</string>
+  <string name="property_sender">Sender</string>
   <string name="property_weight">น้ำหนักพัสดุ</string>
   <string name="repository">ดูโค้ด</string>
   <string name="save">บันทึก</string>

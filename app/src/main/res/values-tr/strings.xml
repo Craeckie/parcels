@@ -33,6 +33,7 @@
   <string name="property_delivery_time">Teslimat zamanı</string>
   <string name="property_dropoff">Drop-off location</string>
   <string name="property_eta">Tahmini varış zamanı</string>
+  <string name="property_sender">Sender</string>
   <string name="property_weight">Ağırlık</string>
   <string name="repository">Depo</string>
   <string name="save">Kaydet</string>
