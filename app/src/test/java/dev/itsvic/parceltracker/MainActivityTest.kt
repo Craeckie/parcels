@@ -265,6 +265,55 @@ class MainActivityTest {
   }
 
   @Test
+  fun parseDeepLink_sharedDhlMailLink_extractsPiececodeAndSelectsDhlDe() {
+    val intent =
+        createSendIntent(
+            "https://custcomm.dhl.de/go/10/a1b2c3d4e5f6.html?piececode=JJD000390007912345678")
+    val result = MainActivity().parseDeepLink(intent)
+
+    assertNotNull(result)
+    assertEquals("JJD000390007912345678", result?.trackingId)
+    assertEquals(Service.DHL_DE.ordinal, result?.serviceOrdinal)
+  }
+
+  @Test
+  fun parseDeepLink_sharedDhlMailLinkInText_stillExtractsPiececode() {
+    val intent =
+        createSendIntent(
+            "Ihre Sendung: https://custcomm.dhl.de/go/10/a1b2c3d4e5f6.html?piececode=JJD000390007912345678 Viele Grüße")
+    val result = MainActivity().parseDeepLink(intent)
+
+    assertNotNull(result)
+    assertEquals("JJD000390007912345678", result?.trackingId)
+    assertEquals(Service.DHL_DE.ordinal, result?.serviceOrdinal)
+  }
+
+  @Test
+  fun parseDeepLink_dhlMailLinkMissingPiececode_returnsNull() {
+    val intent = createSendIntent("https://custcomm.dhl.de/go/10/a1b2c3d4e5f6.html")
+    val result = MainActivity().parseDeepLink(intent)
+
+    assertNull(result)
+  }
+
+  @Test
+  fun parseDeepLink_dhlMailLinkEmptyPiececode_returnsNull() {
+    val intent = createSendIntent("https://custcomm.dhl.de/go/10/a1b2c3d4e5f6.html?piececode=")
+    val result = MainActivity().parseDeepLink(intent)
+
+    assertNull(result)
+  }
+
+  @Test
+  fun parseDeepLink_dhlMailLinkOutsideGoPath_returnsNull() {
+    val intent =
+        createSendIntent("https://custcomm.dhl.de/other/page.html?piececode=JJD000390007912345678")
+    val result = MainActivity().parseDeepLink(intent)
+
+    assertNull(result)
+  }
+
+  @Test
   fun parseDeepLink_sharedTextWithoutUrl_returnsNull() {
     val intent = createSendIntent("just some random text with no link")
     val result = MainActivity().parseDeepLink(intent)

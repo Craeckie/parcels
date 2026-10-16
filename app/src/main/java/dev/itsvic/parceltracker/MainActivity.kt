@@ -169,7 +169,13 @@ class MainActivity : ComponentActivity() {
     val parsedDeepLink = parseDeepLink(intent)
     val uri = extractTrackingUri(intent)
     if (parsedDeepLink == null &&
-        uri?.host in listOf("www.dhl.de", "www.dhl.com", "www.gls-pakete.de", "www.myhermes.de")) {
+        uri?.host in
+            listOf(
+                "www.dhl.de",
+                "www.dhl.com",
+                "custcomm.dhl.de",
+                "www.gls-pakete.de",
+                "www.myhermes.de")) {
       // Invalid tracking link
       Toast.makeText(this, getString(R.string.invalid_tracking_link), Toast.LENGTH_SHORT).show()
     }
@@ -230,6 +236,10 @@ class MainActivity : ComponentActivity() {
           }
           uri.host == "www.dhl.com" && uri.path?.contains("tracking-parcel.html") == true -> {
             uri.getQueryParameter("tracking-id")
+          }
+          // Links in DHL notification mails, e.g. custcomm.dhl.de/go/10/<token>.html?piececode=...
+          uri.host == "custcomm.dhl.de" && uri.path?.startsWith("/go/") == true -> {
+            uri.getQueryParameter("piececode")
           }
           else -> return null
         }
