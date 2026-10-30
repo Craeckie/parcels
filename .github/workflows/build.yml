@@ -39,18 +39,13 @@ jobs:
         if: env.HAVE_KEYSTORE == 'true'
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         run: |
           BUILD_TOOLS=$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -n1)
           UNSIGNED=app/build/outputs/apk/release/app-release-unsigned.apk
           SIGNED=app/build/outputs/apk/release/app-release-signed.apk
-          if [ -z "$KEY_ALIAS" ]; then
-            KEY_ALIAS=$(keytool -list -storepass "$KEYSTORE_PASSWORD" -keystore "$RUNNER_TEMP/release.jks" 2>/dev/null \
-              | grep "PrivateKeyEntry" | awk -F',' '{print $1}' | tr -d ' ')
-          fi
           "${BUILD_TOOLS}apksigner" sign \
             --ks "$RUNNER_TEMP/release.jks" \
-            --ks-key-alias "$KEY_ALIAS" \
+            --ks-key-alias my-key \
             --ks-pass "pass:$KEYSTORE_PASSWORD" \
             --key-pass "pass:$KEYSTORE_PASSWORD" \
             --v1-signing-enabled false \
