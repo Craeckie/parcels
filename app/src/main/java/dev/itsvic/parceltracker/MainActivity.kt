@@ -174,6 +174,7 @@ class MainActivity : ComponentActivity() {
                 "www.dhl.de",
                 "www.dhl.com",
                 "custcomm.dhl.de",
+                "nolp.dhl.de",
                 "www.gls-pakete.de",
                 "www.myhermes.de")) {
       // Invalid tracking link
@@ -240,6 +241,12 @@ class MainActivity : ComponentActivity() {
           // Links in DHL notification mails, e.g. custcomm.dhl.de/go/10/<token>.html?piececode=...
           uri.host == "custcomm.dhl.de" && uri.path?.startsWith("/go/") == true -> {
             uri.getQueryParameter("piececode")
+          }
+          // Legacy DHL tracking links, e.g.
+          // nolp.dhl.de/nextt-online-public/set_identcodes.do?lang=de&idc=...
+          uri.host == "nolp.dhl.de" &&
+              uri.path?.startsWith("/nextt-online-public/set_identcodes.do") == true -> {
+            uri.getQueryParameter("idc")
           }
           else -> return null
         }

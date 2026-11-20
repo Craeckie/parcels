@@ -314,6 +314,51 @@ class MainActivityTest {
   }
 
   @Test
+  fun parseDeepLink_legacyNolpDhlLink_extractsIdcAndSelectsDhlDe() {
+    val intent =
+        createIntentWithData(
+            "http://nolp.dhl.de/nextt-online-public/set_identcodes.do?lang=de&idc=00340434161234567890")
+    val result = MainActivity().parseDeepLink(intent)
+
+    assertNotNull(result)
+    assertEquals("00340434161234567890", result?.trackingId)
+    assertEquals(Service.DHL_DE.ordinal, result?.serviceOrdinal)
+  }
+
+  @Test
+  fun parseDeepLink_sharedLegacyNolpDhlLink_extractsIdc() {
+    val intent =
+        createSendIntent(
+            "Sendung: https://nolp.dhl.de/nextt-online-public/set_identcodes.do?lang=de&idc=00340434161234567890")
+    val result = MainActivity().parseDeepLink(intent)
+
+    assertNotNull(result)
+    assertEquals("00340434161234567890", result?.trackingId)
+    assertEquals(Service.DHL_DE.ordinal, result?.serviceOrdinal)
+  }
+
+  @Test
+  fun parseDeepLink_legacyNolpDhlLinkMissingIdc_returnsNull() {
+    val intent =
+        createIntentWithData("http://nolp.dhl.de/nextt-online-public/set_identcodes.do?lang=de")
+    assertNull(MainActivity().parseDeepLink(intent))
+  }
+
+  @Test
+  fun parseDeepLink_legacyNolpDhlLinkEmptyIdc_returnsNull() {
+    val intent =
+        createIntentWithData(
+            "http://nolp.dhl.de/nextt-online-public/set_identcodes.do?lang=de&idc=")
+    assertNull(MainActivity().parseDeepLink(intent))
+  }
+
+  @Test
+  fun parseDeepLink_nolpDhlOtherPath_returnsNull() {
+    val intent = createIntentWithData("http://nolp.dhl.de/other.do?idc=00340434161234567890")
+    assertNull(MainActivity().parseDeepLink(intent))
+  }
+
+  @Test
   fun parseDeepLink_sharedTextWithoutUrl_returnsNull() {
     val intent = createSendIntent("just some random text with no link")
     val result = MainActivity().parseDeepLink(intent)
