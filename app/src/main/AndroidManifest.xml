@@ -50,6 +50,15 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:scheme="https"
+                    android:host="tracking.dpd.de"
+                    android:pathPattern="/status/.*/parcel/.*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
                     android:host="www.dhl.com"
                     android:pathPrefix="/de-de/home/tracking/tracking-parcel.html" />
             </intent-filter>

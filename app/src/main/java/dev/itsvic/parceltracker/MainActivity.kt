@@ -175,6 +175,7 @@ class MainActivity : ComponentActivity() {
                 "www.dhl.com",
                 "custcomm.dhl.de",
                 "nolp.dhl.de",
+                "tracking.dpd.de",
                 "www.gls-pakete.de",
                 "www.myhermes.de")) {
       // Invalid tracking link
@@ -228,6 +229,17 @@ class MainActivity : ComponentActivity() {
           trackingId = trackingId,
           serviceOrdinal = Service.GLS.ordinal,
           postalCode = postCode ?: "")
+    }
+
+    // DPD Germany tracking links, e.g. tracking.dpd.de/status/de_DE/parcel/<id>
+    if (uri.host == "tracking.dpd.de") {
+      val segments = uri.pathSegments
+      if (segments.size != 4 || segments[0] != "status" || segments[2] != "parcel") return null
+      val trackingId = segments[3]
+      if (trackingId.isNullOrEmpty() || !trackingId.matches(Regex("^[a-zA-Z0-9]+$"))) {
+        return null
+      }
+      return AddParcelPage(trackingId = trackingId, serviceOrdinal = Service.DPD_GER.ordinal)
     }
 
     val trackingId =

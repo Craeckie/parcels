@@ -359,6 +359,39 @@ class MainActivityTest {
   }
 
   @Test
+  fun parseDeepLink_dpdGerLink_extractsParcelAndSelectsDpdGer() {
+    val intent = createIntentWithData("https://tracking.dpd.de/status/de_DE/parcel/09445012345678")
+    val result = MainActivity().parseDeepLink(intent)
+
+    assertNotNull(result)
+    assertEquals("09445012345678", result?.trackingId)
+    assertEquals(Service.DPD_GER.ordinal, result?.serviceOrdinal)
+  }
+
+  @Test
+  fun parseDeepLink_sharedDpdGerLinkOtherLocale_extractsParcel() {
+    val intent =
+        createSendIntent("Ihr Paket: https://tracking.dpd.de/status/en_US/parcel/09445012345678")
+    val result = MainActivity().parseDeepLink(intent)
+
+    assertNotNull(result)
+    assertEquals("09445012345678", result?.trackingId)
+    assertEquals(Service.DPD_GER.ordinal, result?.serviceOrdinal)
+  }
+
+  @Test
+  fun parseDeepLink_dpdGerLinkMissingParcel_returnsNull() {
+    val intent = createIntentWithData("https://tracking.dpd.de/status/de_DE/parcel/")
+    assertNull(MainActivity().parseDeepLink(intent))
+  }
+
+  @Test
+  fun parseDeepLink_dpdGerOtherPath_returnsNull() {
+    val intent = createIntentWithData("https://tracking.dpd.de/status/de_DE/09445012345678")
+    assertNull(MainActivity().parseDeepLink(intent))
+  }
+
+  @Test
   fun parseDeepLink_sharedTextWithoutUrl_returnsNull() {
     val intent = createSendIntent("just some random text with no link")
     val result = MainActivity().parseDeepLink(intent)
